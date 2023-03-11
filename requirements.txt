@@ -5,3 +5,4 @@ beautifulsoup4
 PyYAML
 gTTS
 streamlit-authenticator
+ipython
