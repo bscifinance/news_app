@@ -4,3 +4,4 @@ newspaper3k
 beautifulsoup4
 PyYAML
 gTTS
+streamlit-authenticator
