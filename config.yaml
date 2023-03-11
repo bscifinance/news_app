@@ -1,0 +1,17 @@
+credentials:
+  usernames:
+    pramirez:
+      email: pramirez76@gmail.com
+      name: Pablo
+      password: '$2b$12$Lu0FMt49yx7K0cACLOnu0uMuAp2LGO9fBePPhfOF0yz4NjRDH.2UG' # To be replaced with hashed password
+    pablo_ucm:
+      email: pablo@bsci.finance
+      name: Pablo BSCI
+      password: '$2b$12$E3VZGKS5Cl2yjN0W.PQBnuHAGB9CYMetpM1j58KpWeOSgnOf4fi0O' # To be replaced with hashed password
+cookie:
+  expiry_days: 30
+  key: 'abcdef' # Must be string
+  name: bsci_news
+preauthorized:
+  emails:
+
