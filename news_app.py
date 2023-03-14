@@ -172,7 +172,7 @@ if authentication_status:
     #             **Credits**
     #             - App desarrollada por bsci.finance'''
     #             )
-    col1.markdown("Ingresa un tópico para buscar artículos de noticias y elige cuantos resumenes quieres desplegar:")
+    col1.markdown("Ingresa un tópico para buscar artículos de noticias y elige cuantos resúmenes quieres desplegar:")
     topic = col1.text_input("Tópico")
     num_summaries = col1.slider("Número de resúmenes a desplegar", 5, 20, 5)
     selected_date = col1.selectbox("Elige la fecha", ["Cualquiera","Última hora", "Últimas 24 horas", "Última semana", "Últimos 30 días", "Últimos seis meses", "Último año"])
