@@ -183,7 +183,7 @@ if authentication_status:
         lang = 'es'
     
     if col1.button("Search"):
-        df = scrape_news(topic, language, selected_date)
+        df = scrape_news(topic, selected_date, language)
 
         news_list = summarize_news(df, num_summaries)
         col2.write(f"Desplegando {len(news_list)} resumenes de noticias:")
