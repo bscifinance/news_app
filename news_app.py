@@ -8,11 +8,12 @@ import nltk
 nltk.download('punkt')
 import streamlit as st
 import streamlit_authenticator as stauth
-import datetime
+from gtts import gTTS
+from IPython.display import Audio, display
+import io
 from pathlib import Path
 import yaml
 from yaml.loader import SafeLoader
-import pyttsx3
 
 st.set_page_config(page_title="BSCI_News", page_icon="logo_bsci.png", layout="wide")
 
@@ -20,6 +21,7 @@ with open('config.yaml') as file:
     config = yaml.load(file, Loader=SafeLoader)
 
 def scrape_news(topic, period, language):
+    # replace spaces with +
     topic = topic.replace(' ', '+')
     
     if language == "Spanish" and period == "Última hora":
@@ -103,16 +105,14 @@ def summarize_news(df, num):
       news_list.append(story)
    return news_list
 
-engine = pyttsx3.init()
-voices = engine.getProperty('voices')
-newVoiceRate = 120
-
-def play_audio(text, lang):
-    engine.setProperty('voice', lang)
-    engine.setProperty('rate', newVoiceRate)
-    file = engine.save_to_file(text, 'news.mp3')
-    engine.runAndWait()
-    return file
+def play_audio(summary, lang):
+    if not summary:
+        return None
+    # Generate audio file from summary
+    tts = gTTS(summary, lang=lang)
+    audio_bytes = io.BytesIO()
+    tts.write_to_fp(audio_bytes)
+    return audio_bytes.getvalue()
 
 authenticator = stauth.Authenticate(
     config['credentials'],
@@ -121,7 +121,6 @@ authenticator = stauth.Authenticate(
     config['cookie']['expiry_days'],
     config['preauthorized']
 )
-# authenticator = stauth.Authenticate(names, usernames, hashed_passwords, "bsci_news", "abcdef")
 
 name, authentication_status, username = authenticator.login("Login", "main")
 
@@ -150,6 +149,7 @@ if authentication_status == None:
     st.warning("Please enter your username and password") 
 
 if authentication_status:
+    
     authenticator.logout("Logout", "main")
 
     col1.image("logo_bsci.png", width=100)
@@ -161,9 +161,9 @@ if authentication_status:
     selected_date = col1.selectbox("Elige la fecha", ["Cualquiera","Última hora", "Últimas 24 horas", "Última semana", "Últimos 30 días", "Últimos seis meses", "Último año"])
     language = col1.selectbox("Elige el Idioma", ["English", "Spanish"])
     if language == 'English':
-        lang = voices[1].id
+        lang = 'en'
     else:
-        lang = voices[0].id
+        lang = 'es'
     
     if col1.button("Search"):
         df = scrape_news(topic, selected_date, language)
@@ -177,9 +177,7 @@ if authentication_status:
             col2.write(f"Time and Date: {news['date']}")
             col2.write(f"Summary: {news['summary']}")
             col2.write("----")
-            audio_file = play_audio(news['summary'], lang)
-            col2.audio('news.mp3')
-
+            col2.audio(play_audio(news['summary'], lang), format='audio/mp3')
 
 
 
