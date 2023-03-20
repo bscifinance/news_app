@@ -3,6 +3,7 @@ pandas
 newspaper3k
 beautifulsoup4
 PyYAML
+libespeak.so.1
 pyttsx3==2.90
 streamlit-authenticator
 ipython
