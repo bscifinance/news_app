@@ -3,7 +3,8 @@ pandas
 newspaper3k
 beautifulsoup4
 PyYAML
+python-espeak
 pyttsx3
 streamlit-authenticator
 ipython
-espeak
+
