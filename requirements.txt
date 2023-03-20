@@ -3,6 +3,7 @@ pandas
 newspaper3k
 beautifulsoup4
 PyYAML
+sudo apt-get install libespeak1
 pyttsx3
 streamlit-authenticator
 ipython
