@@ -8,14 +8,11 @@ import nltk
 nltk.download('punkt')
 import streamlit as st
 import streamlit_authenticator as stauth
-from gtts import gTTS
-from IPython.display import Audio, display
-import io
 import datetime
-import pickle
 from pathlib import Path
 import yaml
 from yaml.loader import SafeLoader
+import pyttsx3
 
 st.set_page_config(page_title="BSCI_News", page_icon="logo_bsci.png", layout="wide")
 
@@ -23,7 +20,6 @@ with open('config.yaml') as file:
     config = yaml.load(file, Loader=SafeLoader)
 
 def scrape_news(topic, period, language):
-    # replace spaces with +
     topic = topic.replace(' ', '+')
     
     if language == "Spanish" and period == "Última hora":
@@ -107,23 +103,16 @@ def summarize_news(df, num):
       news_list.append(story)
    return news_list
 
-def play_audio(summary, lang):
-    if not summary:
-        return None
-    # Generate audio file from summary
-    tts = gTTS(summary, lang=lang)
-    audio_bytes = io.BytesIO()
-    tts.write_to_fp(audio_bytes)
-    return audio_bytes.getvalue()
+engine = pyttsx3.init()
+voices = engine.getProperty('voices')
+newVoiceRate = 120
 
-def log_activity(username):
-    # Get the current date and time
-    now = datetime.datetime.now()
-
-    # Open the log file
-    with open("log.txt", "a") as f:
-        # Write the username and timestamp to the log file
-        f.write(f"{username} logged in at {now}\n")
+def play_audio(text, lang):
+    engine.setProperty('voice', lang)
+    engine.setProperty('rate', newVoiceRate)
+    file = engine.save_to_file(text, 'news.mp3')
+    engine.runAndWait()
+    return file
 
 authenticator = stauth.Authenticate(
     config['credentials'],
@@ -161,26 +150,20 @@ if authentication_status == None:
     st.warning("Please enter your username and password") 
 
 if authentication_status:
-    log_activity(username)
-
     authenticator.logout("Logout", "main")
 
     col1.image("logo_bsci.png", width=100)
     col1.title("BSCI News")
     col1.markdown("Resumen de noticias a tu medida")
-    # col1.caption('''
-    #             **Credits**
-    #             - App desarrollada por bsci.finance'''
-    #             )
     col1.markdown("Ingresa un tópico para buscar artículos de noticias y elige cuantos resúmenes quieres desplegar:")
     topic = col1.text_input("Tópico")
     num_summaries = col1.slider("Número de resúmenes a desplegar", 5, 20, 5)
     selected_date = col1.selectbox("Elige la fecha", ["Cualquiera","Última hora", "Últimas 24 horas", "Última semana", "Últimos 30 días", "Últimos seis meses", "Último año"])
     language = col1.selectbox("Elige el Idioma", ["English", "Spanish"])
     if language == 'English':
-        lang = 'en'
+        lang = voices[1].id
     else:
-        lang = 'es'
+        lang = voices[0].id
     
     if col1.button("Search"):
         df = scrape_news(topic, selected_date, language)
@@ -194,7 +177,8 @@ if authentication_status:
             col2.write(f"Time and Date: {news['date']}")
             col2.write(f"Summary: {news['summary']}")
             col2.write("----")
-            col2.audio(play_audio(news['summary'], lang), format='audio/mp3')
+            audio_file = play_audio(news['summary'], lang)
+            col2.audio('news.mp3')
 
 
 
