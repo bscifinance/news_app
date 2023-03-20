@@ -6,3 +6,4 @@ PyYAML
 pyttsx3
 streamlit-authenticator
 ipython
+espeak
